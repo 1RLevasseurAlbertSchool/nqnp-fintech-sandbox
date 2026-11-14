@@ -72,6 +72,12 @@ def test_order_total_with_reduced_vat_rate():
     assert calculate_order_total([{"price": "50.00", "quantity": 1}], vat_rate="0.055") == Decimal("52.75")
 
 
+def test_vat_rounds_half_up_at_the_cent():
+    # 19.00 * 5.5% = 1.045, a half-cent tie: RULE-001 ROUND_HALF_UP -> 1.05.
+    # The float path gives 1.04 (round(19.00 * 0.055, 2) == 1.04).
+    assert calculate_order_total([{"price": "19.00", "quantity": 1}], vat_rate="0.055") == Decimal("20.05")
+
+
 def test_installments_split_evenly():
     assert split_into_installments("90.00", 3) == [Decimal("30.00")] * 3
 
